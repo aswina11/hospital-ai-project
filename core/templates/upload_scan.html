@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container my-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card shadow-lg border-0">
+                <div class="card-body p-5 text-center">
+                    <i class="fa-solid fa-cloud-arrow-up fa-3x text-primary mb-3"></i>
+                    <h3 class="fw-bold mb-4">Upload New Scan</h3>
+                    
+                    <form method="POST" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        <div class="mb-4 text-start">
+                            <label class="form-label fw-bold">Scan Type</label>
+                            <select name="scan_type" class="form-select border-2">
+                                <option value="Chest X-Ray">X-Ray</option>
+                                <option value="CT Scan">CT Scan</option>
+                                <option value="Brain MRI">MRI</option>
+                            </select>
+                        </div>
+                        <div class="mb-4 text-start">
+                            <label class="form-label fw-bold">Select Image</label>
+                            <input type="file" name="scan_image" class="form-control border-2" required>
+                        </div>
+                        <button type="submit" class="btn btn-primary w-100 py-2 fw-bold">Analyze with AI</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    document.querySelector('form').addEventListener('submit', function() {
+        const btn = this.querySelector('button[type="submit"]');
+        btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Analyzing Scan...';
+        btn.classList.add('disabled');
+    });
+</script>
+{% endblock %}

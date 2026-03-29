@@ -1,0 +1,184 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container my-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="fw-bold text-primary">Patient Dashboard</h2>
+            <p class="text-muted">Welcome back, <strong>{{ user.username }}</strong></p>
+        </div>
+        <div class="d-flex gap-2">
+            <a href="{% url 'book_appointment' %}" class="btn btn-outline-primary shadow-sm px-4">
+                <i class="fa-solid fa-calendar-plus me-2"></i> Book Doctor
+            </a>
+            <a href="{% url 'upload_scan' %}" class="btn btn-primary shadow-sm px-4">
+                <i class="fa-solid fa-plus-circle me-2"></i> New AI Scan
+            </a>
+        </div>
+    </div>
+
+    <div class="row mb-4">
+        <div class="col-md-4 mb-3">
+            <div class="card border-0 shadow-sm bg-primary text-white p-3">
+                <div class="d-flex align-items-center">
+                    <i class="fa-solid fa-file-medical fa-2x me-3"></i>
+                    <div>
+                        <h6 class="mb-0">Total AI Scans</h6>
+                        <h2 class="fw-bold mb-0">{{ history.count }}</h2>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4 mb-3">
+            <div class="card border-0 shadow-sm bg-info text-white p-3">
+                <div class="d-flex align-items-center">
+                    <i class="fa-solid fa-calendar-check fa-2x me-3"></i>
+                    <div>
+                        <h6 class="mb-0">My Appointments</h6>
+                        <h2 class="fw-bold mb-0">{{ appointments.count }}</h2>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card shadow border-0 mb-5">
+        <div class="card-body p-4">
+            <h4 class="fw-bold mb-4 text-dark"><i class="fa-solid fa-user-doctor me-2 text-primary"></i>Your Booked Appointments & Reports</h4>
+            
+            {% if appointments %}
+            <div class="table-responsive">
+                <table class="table table-hover align-middle">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Doctor</th>
+                            <th>Date & Time</th>
+                            <th>Status</th>
+                            <th>Medical Records</th> 
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for appt in appointments %}
+                        <tr>
+                            <td>
+                                <span class="fw-bold text-primary">{{ appt.doctor.name }}</span><br>
+                                <small class="text-muted">{{ appt.doctor.specialization }}</small>
+                            </td>
+                            <td>
+                                <div>{{ appt.date|date:"d M Y" }}</div>
+                                <small class="text-muted">{{ appt.time_slot }}</small>
+                            </td>
+                            <td>
+                                {% if appt.is_completed %}
+                                    <span class="badge bg-info text-white"><i class="fa-solid fa-check-double me-1"></i> Finished</span>
+                                {% elif appt.date >= today %}
+                                    <span class="badge bg-success shadow-sm">Upcoming</span>
+                                {% else %}
+                                    <span class="badge bg-secondary">Completed</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if appt.is_completed %}
+                                    <div class="d-flex gap-2">
+                                        {% if appt.report_image %}
+                                            <a href="{{ appt.report_image.url }}" target="_blank" class="btn btn-sm btn-success">
+                                                <i class="fa-solid fa-file-invoice me-1"></i> Report
+                                            </a>
+                                        {% endif %}
+                                        
+                                        {% if appt.prescription_notes %}
+                                            <button class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#notesModal{{ appt.id }}">
+                                                <i class="fa-solid fa-prescription me-1"></i> Rx Notes
+                                            </button>
+
+                                            <div class="modal fade" id="notesModal{{ appt.id }}" tabindex="-1" aria-hidden="true">
+                                                <div class="modal-dialog modal-dialog-centered">
+                                                    <div class="modal-content border-0 shadow">
+                                                        <div class="modal-header bg-primary text-white">
+                                                            <h5 class="modal-title fw-bold">Prescription & Advice</h5>
+                                                            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                        </div>
+                                                        <div class="modal-body text-start">
+                                                            <div class="mb-3 border-bottom pb-2">
+                                                                <small class="text-muted d-block">Consulting Doctor</small>
+                                                                <strong>{{ appt.doctor.name }}</strong>
+                                                            </div>
+                                                            <div class="p-3 bg-light rounded border border-primary-subtle" style="white-space: pre-wrap; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">{{ appt.prescription_notes }}</div>
+                                                        </div>
+                                                        <div class="modal-footer border-0">
+                                                            <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Close</button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                {% else %}
+                                    <span class="text-muted small italic">Processing report...</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <div class="text-center py-4">
+                <p class="text-muted italic">No appointments booked yet.</p>
+                <a href="{% url 'book_appointment' %}" class="btn btn-sm btn-link">Book your first visit</a>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="card shadow border-0">
+        <div class="card-body p-4">
+            <h4 class="fw-bold mb-4 text-dark"><i class="fa-solid fa-microscope me-2 text-primary"></i>AI Medical Scan History</h4>
+            
+            {% if history %}
+            <div class="table-responsive">
+                <table class="table table-hover align-middle">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Date</th>
+                            <th>Scan Type</th>
+                            <th>AI Preliminary Result</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for item in history %}
+                        <tr>
+                            <td>{{ item.date_uploaded|date:"d M Y" }}</td>
+                            <td><span class="badge bg-info text-dark px-3">{{ item.scan_type }}</span></td>
+                            <td>
+                                <div class="text-muted small" style="max-width: 400px; white-space: pre-wrap; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">
+                                    {{ item.ai_analysis }}
+                                </div>
+                            </td>
+                            <td>
+                                <div class="d-flex gap-2">
+                                    <a href="{% url 'report_detail' item.pk %}" class="btn btn-sm btn-primary">
+                                        <i class="fa-solid fa-file-medical"></i> Full Report
+                                    </a>
+                                    <a href="{{ item.image.url }}" target="_blank" class="btn btn-sm btn-outline-secondary">
+                                        <i class="fa-solid fa-eye"></i>
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <div class="text-center py-5">
+                <i class="fa-solid fa-folder-open fa-3x text-muted mb-3"></i>
+                <p class="text-muted">No medical records found.</p>
+                <a href="{% url 'upload_scan' %}" class="btn btn-outline-primary btn-sm">Start AI Analysis</a>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

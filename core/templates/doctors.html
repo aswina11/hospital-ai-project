@@ -1,0 +1,85 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container my-5">
+    <div class="text-center mb-5">
+        <h2 class="fw-bold text-primary">Meet Our Specialist Team</h2>
+        <p class="text-muted">World-class healthcare professionals at YOUR HOSPITAL</p>
+    </div>
+
+    <div class="row g-4">
+        <div class="col-md-4">
+            <div class="card h-100 shadow-sm border-0">
+                <div class="card-body text-center p-4">
+                    <div class="mb-3 text-primary"><i class="fa-solid fa-x-ray fa-3x"></i></div>
+                    <h5 class="card-title fw-bold">Dr. Aswin S.</h5>
+                    <p class="badge bg-primary-subtle text-primary">Chief Radiologist</p>
+                    <p class="card-text small text-muted">Specialist in AI-driven X-ray and CT scan diagnostics.</p>
+                    <a href="{% url 'book_appointment' %}" class="btn btn-primary btn-sm w-100">Book Appointment</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card h-100 shadow-sm border-0">
+                <div class="card-body text-center p-4">
+                    <div class="mb-3 text-danger"><i class="fa-solid fa-heart-pulse fa-3x"></i></div>
+                    <h5 class="card-title fw-bold">Dr. Rajesh Kumar</h5>
+                    <p class="badge bg-danger-subtle text-danger">Senior Cardiologist</p>
+                    <p class="card-text small text-muted">Expert in heart health, ECG analysis, and hypertension.</p>
+                    <a href="{% url 'book_appointment' %}" class="btn btn-primary btn-sm w-100">Book Appointment</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card h-100 shadow-sm border-0">
+                <div class="card-body text-center p-4">
+                    <div class="mb-3 text-info"><i class="fa-solid fa-brain fa-3x"></i></div>
+                    <h5 class="card-title fw-bold">Dr. Sarah Miller</h5>
+                    <p class="badge bg-info-subtle text-info">Neurologist</p>
+                    <p class="card-text small text-muted">Specializing in brain health and nervous system disorders.</p>
+                    <a href="{% url 'book_appointment' %}" class="btn btn-primary btn-sm w-100">Book Appointment</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card h-100 shadow-sm border-0">
+                <div class="card-body text-center p-4">
+                    <div class="mb-3 text-success"><i class="fa-solid fa-baby fa-3x"></i></div>
+                    <h5 class="card-title fw-bold">Dr. Anjali Menon</h5>
+                    <p class="badge bg-success-subtle text-success">Pediatrician</p>
+                    <p class="card-text small text-muted">Dedicated child healthcare and vaccination specialist.</p>
+                    <a href="{% url 'book_appointment' %}" class="btn btn-primary btn-sm w-100">Book Appointment</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card h-100 shadow-sm border-0">
+                <div class="card-body text-center p-4">
+                    <div class="mb-3 text-warning"><i class="fa-solid fa-stethoscope fa-3x"></i></div>
+                    <h5 class="card-title fw-bold">Dr. David Chen</h5>
+                    <p class="badge bg-warning-subtle text-warning">Dermatologist</p>
+                    <p class="card-text small text-muted">Skin care specialist focusing on advanced clinical treatments.</p>
+                    <a href="{% url 'book_appointment' %}" class="btn btn-primary btn-sm w-100">Book Appointment</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card h-100 shadow-sm border-0">
+                <div class="card-body text-center p-4">
+                    <div class="mb-3 text-secondary"><i class="fa-solid fa-user-doctor fa-3x"></i></div>
+                    <h5 class="card-title fw-bold">Dr. Michael Ross</h5>
+                    <p class="badge bg-secondary-subtle text-secondary">General Physician</p>
+                    <p class="card-text small text-muted">Primary healthcare provider for general illness and wellness.</p>
+                    <a href="{% url 'book_appointment' %}" class="btn btn-primary btn-sm w-100">Book Appointment</a>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="bg-light py-5 border-bottom hero-section">
+    <div class="container text-center">
+        <h1 class="display-4 fw-bold">Welcome to Your Hospital</h1>
+        <p class="lead text-muted mb-4">Advanced Healthcare powered by Advanced AI Analysis.</p>
+        
+        {% if not user.is_authenticated %}
+            <a href="{% url 'login' %}" class="btn btn-primary btn-lg px-5">Access Patient Portal</a>
+        {% else %}
+            <a href="{% url 'dashboard' %}" class="btn btn-success btn-lg px-5">Go to My Dashboard</a>
+        {% endif %}
+    </div>
+</div>
+
+<div class="container my-5">
+    <div class="row text-center">
+        <div class="col-md-4">
+            <i class="fa-solid fa-microscope fa-3x text-primary mb-3"></i>
+            <h3>AI Analysis</h3>
+            <p>Upload X-rays and CT scans for instant AI insights.</p>
+        </div>
+        <div class="col-md-4">
+            <i class="fa-solid fa-user-md fa-3x text-primary mb-3"></i>
+            <h3>Expert Doctors</h3>
+            <p>Consult with our top-rated medical specialists.</p>
+        </div>
+        <div class="col-md-4">
+            <i class="fa-solid fa-clock fa-3x text-primary mb-3"></i>
+            <h3>24/7 Access</h3>
+            <p>View your medical reports anytime, anywhere.</p>
+        </div>
+    </div>
+</div>
+{% endblock %}

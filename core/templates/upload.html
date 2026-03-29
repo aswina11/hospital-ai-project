@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container my-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card shadow-lg border-0">
+                <div class="card-body p-5">
+                    <h3 class="fw-bold text-primary mb-4 text-center">New AI Scan Analysis</h3>
+                    <form method="POST" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        <div class="mb-4">
+                            <label class="form-label fw-bold">Scan Type</label>
+                            <select name="scan_type" class="form-select">
+                                <option value="X-Ray">Chest X-Ray</option>
+                                <option value="CT-Scan">CT Scan</option>
+                                <option value="MRI">MRI</option>
+                            </select>
+                        </div>
+                        <div class="mb-4">
+                            <label class="form-label fw-bold">Select Image File</label>
+                            <input type="file" name="scan_image" class="form-control" required>
+                        </div>
+                        <button type="submit" class="btn btn-primary w-100 py-2 fw-bold">
+                            <i class="fa-solid fa-cloud-upload me-2"></i> Upload for AI Analysis
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

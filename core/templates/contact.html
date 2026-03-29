@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container my-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card shadow p-4 border-0">
+                <h2 class="fw-bold mb-4">Contact YOUR HOSPITAL</h2>
+                <p><i class="fa-solid fa-location-dot text-primary me-2"></i> 123 Health Ave, Kanyakumari, TN</p>
+                <p><i class="fa-solid fa-phone text-primary me-2"></i> +91 98765 43210</p>
+                <p><i class="fa-solid fa-envelope text-primary me-2"></i> support@yourhospital.com</p>
+                <hr>
+                <h5>Send a Message</h5>
+                <form>
+                    <input type="text" class="form-control mb-3" placeholder="Your Name">
+                    <textarea class="form-control mb-3" placeholder="How can we help?"></textarea>
+                    <button class="btn btn-primary">Send Message</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

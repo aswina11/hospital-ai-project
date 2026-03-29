@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container my-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card shadow border-0">
+                <div class="card-header bg-primary text-white py-3">
+                    <h5 class="mb-0 fw-bold">Finish Consultation: {{ appt.patient.username|upper }}</h5>
+                </div>
+                <div class="card-body p-4">
+                    <form method="POST" enctype="multipart/form-data"> {% csrf_token %}
+                        
+                        <div class="mb-3">
+                            <label class="form-label fw-bold small">Upload Medical Report / Pharmacy Bill (Photo)</label>
+                            <input type="file" name="report_image" class="form-control" accept="image/*" required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label fw-bold small">Doctor's Prescription & Notes</label>
+                            <textarea name="notes" class="form-control" rows="5" placeholder="Enter medicine names, dosage, and follow-up advice..."></textarea>
+                        </div>
+
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-success fw-bold">
+                                <i class="fa-solid fa-cloud-arrow-up me-2"></i> Submit and Notify Patient
+                            </button>
+                            <a href="{% url 'staff_dashboard' %}" class="btn btn-link btn-sm mt-2 text-muted text-decoration-none">Cancel</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
