@@ -83,8 +83,8 @@
                     {% if user.is_authenticated %}
                         {% if user.is_superuser %}
                         <li class="nav-item">
-                            <a class="nav-link text-danger fw-bold mx-2" href="{% url 'staff_dashboard' %}">
-                                <i class="fa-solid fa-shield-halved"></i> STAFF PORTAL
+                            <a class="nav-link text-white fw-bold mx-2" href="{% url 'staff_dashboard' %}" style="background: rgba(255,255,255,0.2); border-radius: 5px;">
+                                <i class="fa-solid fa-shield-halved me-1"></i> STAFF PORTAL
                             </a>
                         </li>
                         {% endif %}
@@ -107,7 +107,9 @@
                             </form>
                         </li>
                     {% else %}
-                        <li class="nav-item"><a class="nav-link text-white me-2" href="{% url 'register' %}">Sign Up</a></li>
+                        <li class="nav-item">
+                            <a class="nav-link text-white me-2" href="{% url 'register' %}">Sign Up</a>
+                        </li>
                         <li class="nav-item">
                             <a class="btn btn-light btn-sm fw-bold text-primary px-3 shadow-sm" href="{% url 'login' %}">
                                 Patient Login
@@ -124,7 +126,7 @@
             {% for message in messages %}
                 <div class="alert alert-{{ message.tags }} alert-dismissible fade show shadow-sm" role="alert">
                     <i class="fa-solid fa-circle-info me-2"></i> {{ message }}
-                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    <button type="button" class="btn-close" data-bs-alert="dismiss" aria-label="Close"></button>
                 </div>
             {% endfor %}
         {% endif %}

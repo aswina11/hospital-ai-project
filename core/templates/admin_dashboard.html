@@ -11,15 +11,21 @@
     </div>
 
     <div class="row mb-4">
-        <div class="col-md-3">
-            <div class="card border-0 shadow-sm bg-dark text-white p-3 text-center">
+        <div class="col-md-3 mb-3">
+            <div class="card border-0 shadow-sm bg-dark text-white p-3 text-center h-100">
                 <h6 class="text-white-50 small mb-1">Total Patient Bookings</h6>
                 <h2 class="fw-bold mb-0">{{ total_bookings }}</h2>
             </div>
         </div>
+        <div class="col-md-3 mb-3">
+            <div class="card border-0 shadow-sm bg-primary text-white p-3 text-center h-100">
+                <h6 class="text-white-50 small mb-1">New Patient Inquiries</h6>
+                <h2 class="fw-bold mb-0">{{ patient_messages.count }}</h2>
+            </div>
+        </div>
     </div>
 
-    <div class="card shadow border-0">
+    <div class="card shadow border-0 mb-5">
         <div class="card-body p-4">
             <h4 class="fw-bold mb-4">Master Appointment List</h4>
             <div class="table-responsive">
@@ -31,7 +37,8 @@
                             <th>Date & Time</th>
                             <th>Symptoms</th>
                             <th>Status</th>
-                            <th>Action</th> </tr>
+                            <th>Action</th>
+                        </tr>
                     </thead>
                     <tbody>
                         {% for appt in all_appointments %}
@@ -73,10 +80,63 @@
                         </tr>
                         {% empty %}
                         <tr>
-                            <td colspan="6" class="text-center py-5">
-                                <i class="fa-solid fa-calendar-minus fa-3x text-muted mb-3"></i>
-                                <p class="text-muted">No appointments found in database.</p>
+                            <td colspan="6" class="text-center py-5 text-muted">No appointments found.</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div class="card shadow border-0">
+        <div class="card-body p-4">
+            <h4 class="fw-bold mb-4 text-primary"><i class="fa-solid fa-comments me-2"></i>Patient Inquiries</h4>
+            <div class="table-responsive">
+                <table class="table table-hover align-middle">
+                    <thead class="table-primary">
+                        <tr>
+                            <th>Sender</th>
+                            <th>Inquiry Message</th>
+                            <th>Received On</th>
+                            <th class="text-center" style="width: 300px;">Reply & Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for msg in patient_messages %}
+                        <tr>
+                            <td><b class="text-dark">{{ msg.user.username }}</b></td>
+                            <td style="max-width: 350px;">
+                                <div class="p-2 bg-light rounded small mb-1">{{ msg.message }}</div>
+                                {% if msg.admin_reply %}
+                                    <div class="small text-success">
+                                        <i class="fa-solid fa-reply me-1"></i> <strong>Your Reply:</strong> {{ msg.admin_reply }}
+                                    </div>
+                                {% endif %}
                             </td>
+                            <td>
+                                <div>{{ msg.created_at|date:"M d, Y" }}</div>
+                                <small class="text-muted">{{ msg.created_at|time:"H:i" }}</small>
+                            </td>
+                            <td class="text-center">
+                                {% if not msg.is_resolved %}
+                                    <form action="{% url 'resolve_message' msg.pk %}" method="POST" class="d-flex flex-column gap-2">
+                                        {% csrf_token %}
+                                        <input type="text" name="admin_reply" class="form-control form-control-sm" placeholder="Write a reply..." required>
+                                        <button type="submit" class="btn btn-sm btn-success w-100">
+                                            <i class="fa-solid fa-paper-plane me-1"></i> Send Reply
+                                        </button>
+                                    </form>
+                                {% else %}
+                                    <span class="badge bg-secondary px-3 py-2">
+                                        <i class="fa-solid fa-check-circle me-1"></i> Resolved
+                                    </span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="4" class="text-center py-5 text-muted">No patient messages yet.</td>
                         </tr>
                         {% endfor %}
                     </tbody>

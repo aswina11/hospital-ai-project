@@ -1,9 +1,9 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib import messages
 from datetime import date, datetime, timedelta
-from .models import Appointment, Doctor
+from .models import Appointment, Doctor, ContactMessage
 from ai_services.models import PatientHistory
 from django.contrib.admin.views.decorators import staff_member_required
 
@@ -17,7 +17,15 @@ def doctors(request):
     return render(request, 'doctors.html', {'doctors': all_doctors})
 
 def contact(request):
-    return render(request, 'contact.html')
+    success = False
+    if request.method == "POST" and request.user.is_authenticated:
+        message_body = request.POST.get('message')
+        
+        # Saves the message to the database linked to the logged-in user
+        ContactMessage.objects.create(user=request.user, message=message_body)
+        success = True
+        
+    return render(request, 'contact.html', {'success': success})
 
 def register(request):
     if request.method == 'POST':
@@ -40,9 +48,13 @@ def dashboard(request):
     history = PatientHistory.objects.filter(patient=request.user).order_by('-date_uploaded')
     appointments = Appointment.objects.filter(patient=request.user).order_by('-date')
     
+    # Fetch patient's own messages to show admin replies
+    my_messages = ContactMessage.objects.filter(user=request.user).order_by('-created_at')
+    
     context = {
         'history': history,
         'appointments': appointments,
+        'my_messages': my_messages,
         'today': date.today()
     }
     return render(request, 'dashboard.html', context)
@@ -51,7 +63,7 @@ def dashboard(request):
 def book_appointment(request):
     all_doctors = Doctor.objects.all()
     
-    # 1. Generate 15-minute slots (10:00 AM to 04:00 PM)
+    # Generate 15-minute slots (10:00 AM to 04:00 PM)
     slots = []
     start_time = datetime.strptime("10:00", "%H:%M")
     end_time = datetime.strptime("16:00", "%H:%M")
@@ -69,19 +81,16 @@ def book_appointment(request):
         try:
             selected_date = date.fromisoformat(selected_date_str)
 
-            # Validation: Advanced booking only
             if selected_date <= date.today():
                 messages.error(request, "Appointments must be booked at least one day in advance!")
                 return render(request, 'book_appointment.html', {'doctors': all_doctors, 'slots': slots})
 
-            # 2. CONCURRENCY CHECK: Check if this slot is already taken for this doctor
             if Appointment.objects.filter(doctor_id=doctor_id, date=selected_date, time_slot=time_slot).exists():
-                messages.error(request, f"This time slot ({time_slot}) is already booked for this doctor. Please choose another time.")
+                messages.error(request, f"This time slot ({time_slot}) is already booked for this doctor.")
                 return render(request, 'book_appointment.html', {'doctors': all_doctors, 'slots': slots})
 
             doctor_obj = Doctor.objects.get(id=doctor_id)
 
-            # Create appointment
             Appointment.objects.create(
                 patient=request.user,
                 doctor=doctor_obj,
@@ -95,7 +104,6 @@ def book_appointment(request):
 
         except (ValueError, Doctor.DoesNotExist):
             messages.error(request, "Invalid selection. Please try again.")
-            return render(request, 'book_appointment.html', {'doctors': all_doctors, 'slots': slots})
 
     return render(request, 'book_appointment.html', {'doctors': all_doctors, 'slots': slots})
 
@@ -106,18 +114,22 @@ def admin_dashboard(request):
     all_appointments = Appointment.objects.all().order_by('-date')
     total_bookings = all_appointments.count()
     
+    # Fetch all patient messages
+    patient_messages = ContactMessage.objects.all().order_by('-created_at')
+    
     context = {
         'all_appointments': all_appointments,
         'total_bookings': total_bookings,
+        'patient_messages': patient_messages,
         'today': date.today()
     }
     return render(request, 'admin_dashboard.html', context)
+
 @staff_member_required
 def complete_appointment(request, pk):
-    appointment = Appointment.objects.get(pk=pk)
+    appointment = get_object_or_404(Appointment, pk=pk)
     
     if request.method == 'POST':
-        # Get the uploaded image and notes
         report = request.FILES.get('report_image')
         notes = request.POST.get('notes')
         
@@ -127,6 +139,26 @@ def complete_appointment(request, pk):
         appointment.save()
         
         messages.success(request, f"Consultation for {appointment.patient.username} marked as finished.")
+        # FIX: Updated to match name='staff_dashboard' in urls.py
         return redirect('staff_dashboard')
 
     return render(request, 'complete_appointment.html', {'appt': appointment})
+
+@staff_member_required
+def resolve_message(request, pk):
+    """
+    Handles admin replies to patient inquiries and marks them as resolved.
+    """
+    if request.method == "POST":
+        message_obj = get_object_or_404(ContactMessage, pk=pk)
+        reply_text = request.POST.get('admin_reply')
+        
+        # Update the database record
+        message_obj.admin_reply = reply_text
+        message_obj.is_resolved = True
+        message_obj.save()
+        
+        messages.success(request, f"Reply sent to {message_obj.user.username} and inquiry resolved.")
+    
+    # FIX: Updated to match name='staff_dashboard' in urls.py
+    return redirect('staff_dashboard')

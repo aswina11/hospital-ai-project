@@ -19,4 +19,5 @@ urlpatterns = [
     path('book/', views.book_appointment, name='book_appointment'),
     path('staff-portal/', views.admin_dashboard, name='staff_dashboard'),
     path('complete-appointment/<int:pk>/', views.complete_appointment, name='complete_appointment'),
-]
+    path('resolve-message/<int:pk>/', views.resolve_message, name='resolve_message'),
+    ] 

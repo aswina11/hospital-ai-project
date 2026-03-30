@@ -1,11 +1,17 @@
 import markdown
 import google.generativeai as genai
-from django.shortcuts import render, redirect
+import os  # <--- ADD THIS
+import json
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt # <--- ADD THIS
 from .models import PatientHistory
 
-# 1. Setup the AI with your secret key
-genai.configure(api_key="AIzaSyCy3XQFU5VEnXhRz82Ci2o7SCotldeGHO4")
+# 1. Setup the AI - Pulling from Environment for Render
+# If on Render, it uses the Environment Variable. If local, it uses the string.
+api_key = os.getenv("GEMINI_API_KEY", "AIzaSyDzVFOIyuIxOGzLbjr5ZL5gaq46i0BMrVg")
+genai.configure(api_key=api_key)
 
 @login_required
 def upload_scan(request):
@@ -13,13 +19,11 @@ def upload_scan(request):
         scan_file = request.FILES['scan_image']
         scan_type = request.POST.get('scan_type')
         
-        # 2. Initialize Gemini 1.5 Flash (Fast and good for images)
-        model = genai.GenerativeModel('gemini-2.5-flash')
+        # Using 1.5-flash as it's the stable free tier model
+        model = genai.GenerativeModel('models/gemini-2.5-flash')
         
-        # 3. Process the image for the AI
         image_data = scan_file.read()
         
-        # 4. Create the prompt for the medical analysis
         prompt = (
             f"You are a professional Radiologist AI. Analyze this {scan_type} image. "
             "Identify key findings and provide a brief preliminary observation. "
@@ -27,7 +31,6 @@ def upload_scan(request):
         )
         
         try:
-            # Send to Google's Servers
             response = model.generate_content([
                 prompt, 
                 {'mime_type': 'image/jpeg', 'data': image_data}
@@ -36,8 +39,6 @@ def upload_scan(request):
         except Exception as e:
             analysis_text = f"AI Error: {str(e)}"
         
-        # 5. Reset the file pointer and save to RDBMS
-        # This is critical so Django can save the file after the AI read it
         scan_file.seek(0) 
         
         PatientHistory.objects.create(
@@ -50,8 +51,6 @@ def upload_scan(request):
         
     return render(request, 'upload_scan.html')
 
-from django.shortcuts import get_object_or_404
-
 @login_required
 def report_detail(request, pk):
     report = get_object_or_404(PatientHistory, pk=pk, patient=request.user)
@@ -61,23 +60,22 @@ def report_detail(request, pk):
         'report': report,
         'report_html': report_html
     })
-from django.http import JsonResponse
-import json
-import google.generativeai as genai
 
+# --- CHATBOT FIX BELOW ---
+
+@csrf_exempt  # <--- THIS IS THE FIX FOR THE LIVE LINK
 def chat_with_ai(request):
     if request.method == "POST":
         try:
             data = json.loads(request.body)
             user_message = data.get('message')
-            # Get history from frontend
             history = data.get('history', [])
 
-            model = genai.GenerativeModel('gemini-2.5-flash')
+            # Use 1.5-flash (2.5-flash doesn't exist yet, 1.5 is the fast one!)
+            model = genai.GenerativeModel('models/gemini-2.5-flash')
             
-            # Start a chat session with the actual history provided
-            # We filter history to ensure it's in the format Gemini expects
-            chat = model.start_chat(history=history[:-1]) # send everything except the last msg
+            # Filtering history to keep Gemini happy
+            chat = model.start_chat(history=history[:-1] if len(history) > 0 else [])
             
             response = chat.send_message(user_message)
             

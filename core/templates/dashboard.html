@@ -40,7 +40,45 @@
                 </div>
             </div>
         </div>
+        <div class="col-md-4 mb-3">
+            <div class="card border-0 shadow-sm bg-success text-white p-3">
+                <div class="d-flex align-items-center">
+                    <i class="fa-solid fa-message fa-2x me-3"></i>
+                    <div>
+                        <h6 class="mb-0">Admin Replies</h6>
+                        <h2 class="fw-bold mb-0">{{ my_messages.count }}</h2>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
+
+    {% if my_messages %}
+    <div class="card shadow border-0 mb-5 overflow-hidden">
+        <div class="card-header bg-white border-0 py-3">
+            <h5 class="fw-bold mb-0 text-dark"><i class="fa-solid fa-bell text-warning me-2"></i>Admin Updates & Inquiries</h5>
+        </div>
+        <div class="card-body p-4 pt-0">
+            {% for msg in my_messages %}
+                {% if msg.admin_reply %}
+                <div class="alert alert-light border-start border-4 border-info shadow-sm mb-3">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div>
+                            <small class="text-muted d-block mb-1">Inquiry sent on: {{ msg.created_at|date:"d M Y" }}</small>
+                            <p class="mb-2 text-dark"><strong>Your Question:</strong> {{ msg.message }}</p>
+                            <div class="bg-white p-3 rounded border border-info-subtle">
+                                <span class="text-info fw-bold d-block small mb-1"><i class="fa-solid fa-user-doctor me-1"></i> Hospital Admin Response:</span>
+                                <p class="mb-0 text-dark italic" style="font-size: 0.95rem;">{{ msg.admin_reply }}</p>
+                            </div>
+                        </div>
+                        <span class="badge bg-success">Resolved</span>
+                    </div>
+                </div>
+                {% endif %}
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
 
     <div class="card shadow border-0 mb-5">
         <div class="card-body p-4">

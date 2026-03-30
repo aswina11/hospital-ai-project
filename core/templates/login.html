@@ -5,23 +5,38 @@
 <div class="container my-5">
     <div class="row justify-content-center">
         <div class="col-md-4">
-            <div class="card shadow border-0">
+            <div class="card shadow border-0 rounded-4">
                 <div class="card-body p-4">
                     <h3 class="text-center fw-bold mb-4 text-primary">Patient Login</h3>
+                    
+                    {% if form.errors %}
+                        <div class="alert alert-danger small py-2">
+                            Invalid username or password. Please try again.
+                        </div>
+                    {% endif %}
+
                     <form method="POST">
                         {% csrf_token %}
                         <div class="mb-3">
-                            <label class="form-label">Username</label>
-                            <input type="text" name="username" class="form-control" required>
+                            <label class="form-label fw-bold small text-muted">Username</label>
+                            <input type="text" name="username" class="form-control rounded-3" placeholder="Enter username" required>
                         </div>
                         <div class="mb-3">
-                            <label class="form-label">Password</label>
-                            <input type="password" name="password" class="form-control" required>
+                            <label class="form-label fw-bold small text-muted">Password</label>
+                            <input type="password" name="password" class="form-control rounded-3" placeholder="Enter password" required>
                         </div>
-                        <button type="submit" class="btn btn-primary w-100 py-2">Sign In</button>
+                        <button type="submit" class="btn btn-primary w-100 py-2 fw-bold shadow-sm">
+                            <i class="fa-solid fa-right-to-bracket me-2"></i>Sign In
+                        </button>
                     </form>
-                    <div class="text-center mt-3">
-                        <small class="text-muted">Don't have an account? Contact hospital reception.</small>
+
+                    <div class="text-center mt-4 border-top pt-3">
+                        <p class="mb-0 small text-muted">
+                            Don't have an account? <br>
+                            <a href="{% url 'register' %}" class="text-primary fw-bold text-decoration-none">
+                                Create a New Account
+                            </a>
+                        </p>
                     </div>
                 </div>
             </div>

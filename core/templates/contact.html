@@ -3,21 +3,82 @@
 {% block content %}
 <div class="container my-5">
     <div class="row justify-content-center">
-        <div class="col-md-6">
-            <div class="card shadow p-4 border-0">
-                <h2 class="fw-bold mb-4">Contact YOUR HOSPITAL</h2>
-                <p><i class="fa-solid fa-location-dot text-primary me-2"></i> 123 Health Ave, Kanyakumari, TN</p>
-                <p><i class="fa-solid fa-phone text-primary me-2"></i> +91 98765 43210</p>
-                <p><i class="fa-solid fa-envelope text-primary me-2"></i> support@yourhospital.com</p>
-                <hr>
-                <h5>Send a Message</h5>
-                <form>
-                    <input type="text" class="form-control mb-3" placeholder="Your Name">
-                    <textarea class="form-control mb-3" placeholder="How can we help?"></textarea>
-                    <button class="btn btn-primary">Send Message</button>
+        <div class="col-md-8 col-lg-6">
+            <div class="card shadow p-4 border-0 rounded-4">
+                <h2 class="fw-bold mb-4 text-primary">Contact YOUR HOSPITAL</h2>
+                
+                <div class="rounded-3 overflow-hidden mb-4 shadow-sm border">
+                    <iframe 
+                        src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d63183.15197825624!2d77.495034!3d8.088306!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3b04ed3d4586b5ad%3A0xc3163363365f573f!2sKanyakumari%2C%20Tamil%20Nadu!5e0!3m2!1sen!2sin!4v1711780000000!5m2!1sen!2sin" 
+                        width="100%" height="250" style="border:0;" allowfullscreen="" loading="lazy">
+                    </iframe>
+                </div>
+
+                <div class="mb-4">
+                    <p class="mb-2"><i class="fa-solid fa-location-dot text-primary me-2"></i> 123 Health Ave, Kanyakumari, TN</p>
+                    <p class="mb-2"><i class="fa-solid fa-phone text-primary me-2"></i> +91 98765 43210</p>
+                    <p class="mb-0"><i class="fa-solid fa-envelope text-primary me-2"></i> support@yourhospital.com</p>
+                </div>
+                
+                <hr class="text-muted">
+                
+                <h5 class="fw-bold mb-3">Send a Message to Admin</h5>
+
+                {% if success %}
+                <div class="alert alert-success alert-dismissible fade show" role="alert">
+                    <i class="fa-solid fa-circle-check me-2"></i> Your message has been sent to the Admin!
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+                {% endif %}
+
+                <form method="POST">
+                    {% csrf_token %}
+                    
+                    {% if user.is_authenticated %}
+                        <div class="alert alert-light border small py-2 mb-3">
+                            Sending as: <strong>{{ user.username }}</strong>
+                        </div>
+                    {% endif %}
+
+                    <textarea name="message" class="form-control mb-3" rows="4" placeholder="How can we help?" required></textarea>
+
+                    {% if user.is_authenticated %}
+                        <button type="submit" class="btn btn-primary w-100 py-2 fw-bold">
+                            <i class="fa-solid fa-paper-plane me-2"></i> Send Message
+                        </button>
+                    {% else %}
+                        <button type="button" class="btn btn-primary w-100 py-2 fw-bold" onclick="showLoginPopup()">
+                            <i class="fa-solid fa-lock me-2"></i> Send Message
+                        </button>
+                    {% endif %}
                 </form>
             </div>
         </div>
     </div>
 </div>
+
+<div class="modal fade" id="loginModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content text-center p-4 border-0 shadow">
+      <div class="modal-body">
+        <div class="bg-light rounded-circle d-inline-block p-4 mb-3">
+            <i class="fas fa-user-lock fa-3x text-primary"></i>
+        </div>
+        <h3 class="fw-bold">Login Required</h3>
+        <p class="text-muted">To protect patient privacy, you must be logged in to send messages directly to our medical admin staff.</p>
+        <div class="d-grid gap-2 mt-4">
+          <a href="{% url 'login' %}?next={{ request.path }}" class="btn btn-primary py-2 fw-bold">Login Now</a>
+          <button type="button" class="btn btn-link text-muted" data-bs-dismiss="modal">I'll do it later</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+function showLoginPopup() {
+    var myModal = new bootstrap.Modal(document.getElementById('loginModal'));
+    myModal.show();
+}
+</script>
 {% endblock %}
