@@ -1,16 +1,18 @@
 import markdown
 import google.generativeai as genai
 import os  # <--- ADD THIS
+from dotenv import load_dotenv
 import json
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt # <--- ADD THIS
 from .models import PatientHistory
+load_dotenv()
 
 # 1. Setup the AI - Pulling from Environment for Render
 # If on Render, it uses the Environment Variable. If local, it uses the string.
-api_key = os.getenv("GEMINI_API_KEY", "AIzaSyDzVFOIyuIxOGzLbjr5ZL5gaq46i0BMrVg")
+api_key = os.getenv("GEMINI_API_KEY")
 genai.configure(api_key=api_key)
 
 @login_required

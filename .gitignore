@@ -1,0 +1,12 @@
+# Security: Hide our API keys
+.env
+
+# Python: Hide messy cache files
+__pycache__/
+*.pyc
+
+# Virtual Environment: Hide the heavy venv folder
+venv/
+
+# Database: Hide your local database
+db.sqlite3
